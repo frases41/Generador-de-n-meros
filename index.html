@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Generador de Números Únicos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #101820;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+    h1 { color: #00d084; }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      border-radius: 8px;
+      border: none;
+    }
+    input {
+      width: 220px;
+      text-align: center;
+    }
+    button {
+      background: #00d084;
+      color: #101820;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover { background: #00a870; }
+    .output {
+      margin-top: 20px;
+      font-size: 18px;
+      background: #1a1f2b;
+      padding: 15px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+    .clear {
+      background: #ff4d4d;
+      color: #fff;
+    }
+    .clear:hover {
+      background: #cc0000;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Generador de Números Únicos</h1>
+
+  <p>Escribe tu número base con "x" (por ejemplo: <b>18000xxxxx</b>)</p>
+
+  <input type="text" id="pattern" placeholder="Ejemplo: 18000xxxxx">
+  <br>
+  <button onclick="generar()">Generar</button>
+  <button class="clear" onclick="borrar()">Borrar guardados</button>
+
+  <div class="output" id="resultado"></div>
+
+  <script>
+    let generados = JSON.parse(localStorage.getItem("numerosGenerados")) || [];
+
+    function generar() {
+      const base = document.getElementById("pattern").value.trim();
+      const resultadoDiv = document.getElementById("resultado");
+
+      if (!base.includes("x")) {
+        resultadoDiv.innerHTML = "❌ Debes incluir al menos una 'x' en el número base.";
+        return;
+      }
+
+      let nuevos = [];
+      let intentos = 0;
+
+      while (nuevos.length < 5 && intentos < 1000) {
+        intentos++;
+        let numero = base.replace(/x/g, () => Math.floor(Math.random() * 10));
+        if (!generados.includes(numero)) {
+          generados.push(numero);
+          nuevos.push(numero);
+        }
+      }
+
+      localStorage.setItem("numerosGenerados", JSON.stringify(generados));
+
+      if (nuevos.length > 0) {
+        resultadoDiv.innerHTML = `<b>Números generados:</b><br>${nuevos.join("<br>")}`;
+      } else {
+        resultadoDiv.innerHTML = "⚠️ Ya se generaron todas las combinaciones posibles.";
+      }
+    }
+
+    function borrar() {
+      localStorage.removeItem("numerosGenerados");
+      generados = [];
+      document.getElementById("resultado").innerHTML = "🗑️ Lista de números guardados borrada.";
+    }
+  </script>
+
+</body>
+</html>
